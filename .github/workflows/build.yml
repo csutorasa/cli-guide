@@ -1,0 +1,123 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build_windows:
+    name: Build windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+        
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: windows
+          GOARCH: amd64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-windows-amd64
+          path: |
+            cli-guide.exe
+
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: windows
+          GOARCH: arm64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-windows-arm64
+          path: |
+            cli-guide.exe
+
+  build_linux:
+    name: Build linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: linux
+          GOARCH: amd64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-linux-amd64
+          path: |
+            cli-guide
+        
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: linux
+          GOARCH: arm64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-linux-arm64
+          path: |
+            cli-guide
+        
+  build_darwin:
+    name: Build Mac
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: darwin
+          GOARCH: amd64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-darwin-amd64
+          path: |
+            cli-guide
+        
+      - name: Build
+        run: go build -ldflags "-s -w"
+        env:
+          GOOS: darwin
+          GOARCH: arm64
+      
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-guide-darwin-arm64
+          path: |
+            cli-guide

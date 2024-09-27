@@ -1,0 +1,10 @@
+# Output
+/cli-guide
+/cli-guide.exe
+/state.yml
+/*_session.yml
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+.idea

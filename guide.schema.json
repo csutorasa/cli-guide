@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "cli-guide guide file",
+  "type": "array",
+  "description": "guide file",
+  "minItems": 1,
+  "items": {
+    "required": ["name", "steps"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the guide",
+        "pattern": ".+"
+      },
+      "steps": {
+        "type": "array",
+        "description": "Steps of the guide",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "description": "Single step",
+          "required": ["title", "text"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title of the step",
+              "pattern": ".+"
+            },
+            "text": {
+              "type": "string",
+              "description": "Commands of the step",
+              "pattern": ".+"
+            },
+            "inputs": {
+              "type": "array",
+              "description": "Inputs of the step",
+              "items": {
+                "type": "object",
+                "description": "Single input",
+                "required": ["name", "text"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the input",
+                    "pattern": ".+"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "Text of the input",
+                    "pattern": ".+"
+                  },
+                  "example": {
+                    "type": "string",
+                    "description": "Example accepted input",
+                    "pattern": ".+"
+                  },
+                  "validator": {
+                    "type": "string",
+                    "description": "Regexp for the input validation",
+                    "pattern": ".+"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

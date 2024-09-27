@@ -1,0 +1,61 @@
+- name: Install noip2
+  steps:
+  - title: Download sources
+    text: |
+      Create a directory for the sources:
+      $ mkdir -p ~/.noip-sources/
+      Download sources:
+      $ wget http://www.noip.com/client/linux/noip-duc-linux.tar.gz -O ~/.noip-sources/noip-duc-linux.tar.gz
+      $ curl -o ~/.noip-sources/noip-duc-linux.tar.gz http://www.noip.com/client/linux/noip-duc-linux.tar.gz
+  - title: Extract sources
+    text: |
+      Extract sources:
+      $ tar xf ~/.noip-sources/noip-duc-linux.tar.gz -C ~/.noip-sources/
+  - title: Build noip
+    text: |
+      Go to the sources directory:
+      $ cd ~/.noip-sources/noip-2*
+      Build and install the application:
+      $ sudo make install
+      (Optional) Remove sources:
+      $ rm -rf ~/.noip-sources/
+- name: Configure noip
+  steps:
+  - title: Register an account
+    text: |
+      Register an account at https://www.noip.com
+      Create a ddns hostname
+  - title: Create config file
+    text: |
+      You will need to provide login credentials to https://www.noip.com
+      If you have multiple hosts, only update hosts you intend to 
+      Create config file:
+      $ /usr/local/bin/noip2 -C
+- name: Autostart noip
+  steps:
+  - title: Create systemd service
+    text: |
+      Create a new file:
+      $ sudo touch /etc/systemd/system/noip2.service
+      Edit the file:
+      $ sudo ${EDITOR:-vi} /etc/systemd/system/noip2.service
+      Add the content:
+      [Unit]
+      Description=noip2 service
+
+      [Service]
+      Type=forking
+      ExecStart=/usr/local/bin/noip2
+      Restart=always
+
+      [Install]
+      WantedBy=default.target
+  - title: Allow autostart of the service
+    text: |
+      Reload services:
+      $ sudo systemctl daemon-reload
+  - title: Allow autostart of the service
+    text: |
+      Start and auto-start the service:
+      $ sudo systemctl enable noip2.service
+      $ sudo systemctl restart noip2.service

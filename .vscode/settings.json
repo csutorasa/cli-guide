@@ -1,0 +1,7 @@
+{
+    "yaml.schemas": {
+        "./guide.schema.json": [
+            "guides/*.yml"
+        ],
+    }
+}

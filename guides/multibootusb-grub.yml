@@ -1,0 +1,124 @@
+- name: Create Multiboot USB partitions
+  steps:
+  - title: Find USB device file 
+    text: |
+      Use one of the following commands (example: /dev/sda):
+      $ lsblk
+      $ cat /proc/partitions
+      $ sudo fdisk -l
+      A device with at least 4 GB storage is required, but 16 GB is recommended.
+  - title: Create GPT partition table
+    inputs:
+    - name: DEVICE
+      text: USB device handle
+      example: /dev/sda
+      validator: /dev/[a-z]{3}
+    text: |
+      $ sudo parted {{ .DEVICE }} --script mklabel gpt
+  - title: Create an efi FAT32 partition
+    text: |
+      The recommended size is 1 GB.
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 0% 1GB
+  - title: Create an unformatted linux partition
+    text: |
+      Create an unformatted partition for all linux installers/live disks.
+      The recommended size is 4 GB.
+      Examples:
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 1GB 5GB
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 5GB 9GB
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 1GB 100%
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 5GB 100%
+  - title: Create an ntfs Windows partition
+    text: |
+      Create an ntfs partition for all Windows installers.
+      The recommended size is 8 GB.
+      Examples:
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 1GB 9GB
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 5GB 13GB
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 1GB 100%
+      $ sudo parted -a optimal {{ .DEVICE }} --script mkpart primary fat32 5GB 100%
+  - title: Find EFI partition 
+    text: |
+      Use one of the following commands (example 1 for /dev/sda1):
+      $ lsblk
+      $ cat /proc/partitions
+      $ sudo fdisk -l
+  - title: Add boot and esp flags to efi
+    inputs:
+    - name: EFI_PARTITION
+      text: USB device handle
+      example: 1 for /dev/sda1
+      validator: '[0-9]{1,3}'
+    text: |
+      $ sudo parted {{ .DEVICE }} --script set {{ .EFI_PARTITION }} boot on
+      $ sudo parted {{ .DEVICE }} --script set {{ .EFI_PARTITION }} esp on
+
+- name: Format ntfs partitions
+  steps:
+  - title: Find ntfs partition
+    text: |
+      Use one of the following commands to find the partition index (example: 3 for /dev/sda3):
+      $ lsblk
+      $ cat /proc/partitions
+      $ sudo fdisk -l
+  - title: Format partition to NTFS
+    inputs:
+    - name: DEVICE
+      text: USB device handle
+      example: /dev/sda
+      validator: /dev/[a-z]{3}
+    - name: NTFS_PARTITION
+      text: NTFS partition index
+      example: 3 for /dev/sda3
+      validator: '[0-9]{1,3}'
+    text: |
+      Install ntfs-3g if it is not installed yet:
+      $ sudo apt-get install ntfs-3g
+      $ sudo pacman -S ntfs-3g
+      Create the NTFS partition:
+      $ sudo mkntfs -Q {{ .DEVICE }}{{ .NTFS_PARTITION }}
+
+- name: Copy linux image
+  steps:
+  - title: Copy ISO to partition
+    inputs:
+    - name: DEVICE
+      text: USB device handle
+      example: /dev/sda
+      validator: /dev/[a-z]{3}
+    - name: LINUX_PARTITION
+      text: Linux partition index
+      example: 2 for /dev/sda2
+      validator: '[0-9]{1,3}'
+    - name: LINUX_ISO_FILE
+      text: Linux iso file
+      validator: ([A-Z]:)?([\\\/][A-Za-z0-9\/\-_]+)+[A-Za-z0-9\-_\.]+\.iso
+    text: |
+      $ sudo dd bs=4M if="{{ .LINUX_ISO_FILE }}" of={{ .DEVICE }}{{ .LINUX_PARTITION }} status=progress oflag=sync
+    
+- name: Copy Windows image
+  steps:
+  - title: Copy ISO contents to partition
+    inputs:
+    - name: DEVICE
+      text: USB device handle
+      example: /dev/sda
+      validator: /dev/[a-z]{3}
+    - name: NTFS_PARTITION
+      text: NTFS partition index
+      example: 3 for /dev/sda3
+      validator: '[0-9]{1,3}'
+    - name: WINDOWS_ISO_FILE
+      text: Windows iso file
+      validator: ([A-Z]:)?([\\\/][A-Za-z0-9\/\-_]+)+[A-Za-z0-9\-_\.]+\.iso
+    text: |
+      Mount iso and the partition
+      $ mkdir -p ~/windows-iso && sudo mount -o loop "{{ .WINDOWS_ISO_FILE }}" ~/windows-iso
+      $ mkdir -p ~/windows-partition && sudo mount {{ .DEVICE }}{{ .NTFS_PARTITION }} ~/windows-partition
+      Copy files
+      $ cp -r ~/windows-iso/* ~/windows-partition/
+      Unmount directories
+      $ sudo umount ~/windows-iso && rm -r ~/windows-iso
+      $ sudo umount ~/windows-partition && rm -r ~/windows-partition
+
+
