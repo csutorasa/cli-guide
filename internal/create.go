@@ -9,7 +9,7 @@ import (
 	"github.com/csutorasa/cli-guide/model"
 )
 
-const createUsage = "Usage: cli-guide create guideFilePath"
+const createUsage = "Usage: cli-guide [-rootDir rootDir] create guideFilePath"
 
 func CreateArgs(args []string) {
 	if len(args) == 0 {

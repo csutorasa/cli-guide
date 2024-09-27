@@ -7,7 +7,7 @@ import (
 	"github.com/csutorasa/cli-guide/io"
 )
 
-const listUsage = "Usage: cli-guide list"
+const listUsage = "Usage: cli-guide [-rootDir rootDir] list"
 
 func ListArgs(args []string) {
 	if len(args) != 0 {

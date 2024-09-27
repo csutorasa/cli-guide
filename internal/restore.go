@@ -7,11 +7,11 @@ import (
 	"github.com/csutorasa/cli-guide/io"
 )
 
-const restoreUsage = "Usage: cli-guide restore"
+const restoreUsage = "Usage: cli-guide [-rootDir rootDir] restore"
 
 func RestoreArgs(args []string) {
 	if len(args) != 0 {
-		fmt.Fprintf(os.Stderr, "too many arguments\n%s\n", listUsage)
+		fmt.Fprintf(os.Stderr, "too many arguments\n%s\n", restoreUsage)
 		os.Exit(1)
 	}
 	restore()

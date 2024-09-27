@@ -8,7 +8,7 @@ import (
 	"github.com/csutorasa/cli-guide/io"
 )
 
-const resumeUsage = "Usage: cli-guide resume sessionId"
+const resumeUsage = "Usage: cli-guide [-rootDir rootDir] resume sessionId"
 
 func ResumeArgs(args []string) {
 	if len(args) == 0 {

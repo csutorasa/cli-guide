@@ -25,6 +25,8 @@ func main() {
 		internal.CreateArgs(positional[1:])
 	case "delete":
 		internal.DeleteArgs(positional[1:])
+	case "help":
+		internal.HelpArgs(positional[1:])
 	case "list":
 		internal.ListArgs(positional[1:])
 	case "restore":
@@ -32,7 +34,7 @@ func main() {
 	case "resume":
 		internal.ResumeArgs(positional[1:])
 	default:
-		fmt.Fprintf(os.Stderr, "unexpected keyword %s\n", positional[0])
+		fmt.Fprintf(os.Stderr, "unexpected command %s\n", positional[0])
 		os.Exit(1)
 	}
 }

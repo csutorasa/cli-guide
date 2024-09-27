@@ -8,7 +8,7 @@ import (
 	"github.com/csutorasa/cli-guide/io"
 )
 
-const deleteUsage = "Usage: cli-guide delete sessionId"
+const deleteUsage = "Usage: cli-guide [-rootDir rootDir] delete sessionId"
 
 func DeleteArgs(args []string) {
 	if len(args) == 0 {
