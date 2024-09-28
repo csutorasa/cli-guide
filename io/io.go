@@ -10,6 +10,33 @@ import (
 
 var rootDir string
 
+type LogLevel int
+
+const (
+	LogLevelVerbose LogLevel = iota
+	LogLevelNormal
+	LogLevelQuiet
+)
+
+var logLevel LogLevel
+
+func (l LogLevel) String() string {
+	switch l {
+	case LogLevelVerbose:
+		return "verbose"
+	case LogLevelNormal:
+		return "normal"
+	case LogLevelQuiet:
+		return "quiet"
+	default:
+		panic("unknown LogLevel")
+	}
+}
+
+func SetLogLevel(l LogLevel) {
+	logLevel = l
+}
+
 func SetRootDir(s string) error {
 	stat, err := os.Stat(s)
 	if errors.Is(err, os.ErrNotExist) {
@@ -21,6 +48,7 @@ func SetRootDir(s string) error {
 	if !stat.IsDir() {
 		return fmt.Errorf("not a directory %s", s)
 	}
+	rootDir = s
 	return nil
 }
 

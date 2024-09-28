@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var sessionFileNameRegexp = regexp.MustCompile("^(?P<id>\\d{1,4})_session.yml$")
+var sessionFileNameRegexp = regexp.MustCompile(`^(?P<id>\d{1,4})_session.yml$`)
 
 func idToFilePath(i int) string {
 	filename := fmt.Sprintf("%d_session.yml", i)
@@ -31,7 +31,9 @@ func CreateSession() (int, error) {
 			defer f.Close()
 			return i, nil
 		}
-		return 0, fmt.Errorf("could not check session file existance: %w\n%s", err, p)
+		if err != nil {
+			return 0, fmt.Errorf("could not check session file existance: %w\n%s", err, p)
+		}
 	}
 	return 0, fmt.Errorf("1_state.yml to 1000_state.yml files all exist")
 }

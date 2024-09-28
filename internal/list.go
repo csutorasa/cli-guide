@@ -2,33 +2,33 @@ package internal
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/csutorasa/cli-guide/io"
 )
 
-const listUsage = "Usage: cli-guide [-rootDir rootDir] list"
+const listUsage = "Usage: cli-guide [-rootDir rootDir] [-q | -v] list"
 
 func ListArgs(args []string) {
 	if len(args) != 0 {
-		fmt.Fprintf(os.Stderr, "too many arguments\n%s\n", listUsage)
-		os.Exit(1)
+		io.PrintFatalError2(fmt.Errorf("too many arguments"), listUsage)
 	}
 	list()
 }
 
 func list() {
+	io.PrintVerbose("Listing sessions\n")
 	sessions, err := io.ListSessions()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+		io.PrintFatalError(err)
 	}
 	if len(sessions) == 0 {
-		fmt.Printf("There are no existing sessions\n")
+		io.Print("There are no existing sessions\n")
 		return
 	}
-	fmt.Printf("Existing sessions:\n")
+	io.PrintVerbose(fmt.Sprintf("%d existing sessions were found\n", len(sessions)))
+	io.Print("Existing sessions:\n")
 	for id, session := range sessions {
-		fmt.Printf("%d - %s (step %d)\n", id, session.Guide.Name, session.Guide.Step)
+		io.PrintQuiet(fmt.Sprintf("[%d] %s (step %d)\n", id, session.Guide.Name, session.Guide.Step))
 	}
+	io.PrintVerbose("Exiting\n")
 }

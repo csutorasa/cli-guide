@@ -1,0 +1,35 @@
+- name: Install prometheus
+  steps:
+  - title: Setup
+    text: |
+      Install prometheus:
+      $ sudo apt-get install prometheus
+      $ sudo pacman -S prometheus
+  - title: Reload services
+    text: |
+      $ sudo systemctl daemon-reload
+  - title: Allow autostart of the service
+    text: |
+      $ sudo systemctl enable prometheus.service
+- name: Configure prometheus
+  steps:
+  - title: Add new configuration
+    inputs:
+      - name: JOB_NAME
+        text: Name of the scaper
+        example: My job
+        validator: .+
+      - name: JOB_TARGET
+        text: Target endpoint
+        example: localhost:9090
+        validator: '[a-zA-Z0-9\.-]+(:\d+)?'
+    text: |
+      Edit the configuration:
+      $ sudo ${EDITOR:-vi} /etc/prometheus/prometheus.yml
+      Add the item to the scrape_configs:
+      - job_name: "{{ .JOB_NAME }}"
+        static_configs:
+        - targets: ["localhost:8010"]
+  - title: Restart the service
+    text: |
+      $ sudo systemctl restart prometheus.service

@@ -50,9 +50,8 @@
 
       [Install]
       WantedBy=default.target
-  - title: Allow autostart of the service
+  - title: Reload services
     text: |
-      Reload services:
       $ sudo systemctl daemon-reload
   - title: Allow autostart of the service
     text: |

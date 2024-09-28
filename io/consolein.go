@@ -27,24 +27,24 @@ func ScanGuideStepInput(session *model.Session, guideStepInput *model.GuideStepI
 		if err != nil {
 			return err
 		}
-		_, err = fmt.Printf("%s", guideStepInputText)
+		_, err = PrintQuiet(guideStepInputText)
 		if err != nil {
 			return err
 		}
 		if guideStepInput.Example != "" {
-			_, err = fmt.Printf(" (example: %s)", guideStepInput.Example)
+			_, err = PrintQuiet(fmt.Sprintf(" (example: %s)", guideStepInput.Example))
 			if err != nil {
 				return err
 			}
 		}
 		defaultValue, hasDefaultvalue := session.Variables[guideStepInput.Name]
 		if hasDefaultvalue {
-			_, err = fmt.Printf(" [%s]", defaultValue)
+			_, err = PrintQuiet(fmt.Sprintf(" [%s]", defaultValue))
 			if err != nil {
 				return err
 			}
 		}
-		_, err = fmt.Printf(": ")
+		_, err = PrintQuiet(": ")
 		if err != nil {
 			return err
 		}
@@ -60,36 +60,36 @@ func ScanGuideStepInput(session *model.Session, guideStepInput *model.GuideStepI
 			session.Variables[guideStepInput.Name] = str
 			return nil
 		}
-		fmt.Printf("%s must match '%s' regexp\n", guideStepInput.Name, guideStepInput.Validator)
+		PrintQuiet(fmt.Sprintf("%s must match '%s' regexp\n", guideStepInput.Name, guideStepInput.Validator))
 	}
 }
 
 func ScanBoolDefault(s string, b bool) (bool, error) {
-	_, err := fmt.Printf("%s (", s)
+	_, err := PrintQuiet(fmt.Sprintf("%s (", s))
 	if err != nil {
 		return false, err
 	}
 	if b {
-		_, err = fmt.Printf("Y")
+		_, err = PrintQuiet("Y")
 	} else {
-		_, err = fmt.Printf("y")
+		_, err = PrintQuiet("y")
 	}
 	if err != nil {
 		return false, err
 	}
-	_, err = fmt.Printf("/")
+	_, err = PrintQuiet("/")
 	if err != nil {
 		return false, err
 	}
 	if b {
-		_, err = fmt.Printf("n")
+		_, err = PrintQuiet("n")
 	} else {
-		_, err = fmt.Printf("N")
+		_, err = PrintQuiet("N")
 	}
 	if err != nil {
 		return false, err
 	}
-	_, err = fmt.Printf(")? ")
+	_, err = PrintQuiet(")? ")
 	if err != nil {
 		return false, err
 	}
@@ -110,16 +110,16 @@ func ScanSelectWithZero[T any](s string, zeroText string, items []T, f func(T) s
 	var t T
 	for {
 		for i, item := range items {
-			_, err := fmt.Printf("%d - %s\n", i+1, f(item))
+			_, err := PrintQuiet(fmt.Sprintf("[%d] %s\n", i+1, f(item)))
 			if err != nil {
 				return t, err
 			}
 		}
-		_, err := fmt.Printf("0 - %s\n", zeroText)
+		_, err := PrintQuiet(fmt.Sprintf("[0] %s\n", zeroText))
 		if err != nil {
 			return t, err
 		}
-		_, err = fmt.Printf("%s: ", s)
+		_, err = PrintQuiet(fmt.Sprintf("%s: ", s))
 		if err != nil {
 			return t, err
 		}
@@ -129,7 +129,7 @@ func ScanSelectWithZero[T any](s string, zeroText string, items []T, f func(T) s
 		str := StdinScanner.Text()
 		selected, err := strconv.ParseInt(str, 10, 32)
 		if err != nil || selected < 0 || int(selected) > len(items) {
-			fmt.Printf("Value should be a number between 1 and %d\n", len(items))
+			PrintQuiet(fmt.Sprintf("Value should be a number between 1 and %d\n", len(items)))
 			continue
 		}
 		if selected == 0 {
@@ -143,16 +143,16 @@ func ScanSelectWithZeroDefault[T any](s string, zeroText string, def int, items 
 	var t T
 	for {
 		for i, item := range items {
-			_, err := fmt.Printf("%d - %s\n", i+1, f(item))
+			_, err := PrintQuiet(fmt.Sprintf("[%d] %s\n", i+1, f(item)))
 			if err != nil {
 				return t, err
 			}
 		}
-		_, err := fmt.Printf("0 - %s\n", zeroText)
+		_, err := PrintQuiet(fmt.Sprintf("[0] %s\n", zeroText))
 		if err != nil {
 			return t, err
 		}
-		_, err = fmt.Printf("%s [%d]: ", s, def+1)
+		_, err = PrintQuiet(fmt.Sprintf("%s [%d]: ", s, def+1))
 		if err != nil {
 			return t, err
 		}
@@ -165,7 +165,7 @@ func ScanSelectWithZeroDefault[T any](s string, zeroText string, def int, items 
 		}
 		selected, err := strconv.ParseInt(str, 10, 32)
 		if err != nil || selected < 0 || int(selected) > len(items) {
-			fmt.Printf("Value should be a number between 1 and %d\n", len(items))
+			PrintQuiet(fmt.Sprintf("Value should be a number between 1 and %d\n", len(items)))
 			continue
 		}
 		if selected == 0 {
@@ -179,16 +179,16 @@ func ScanSelectMapWithZero[V any](s string, zeroText string, items map[int]V, f 
 	var v V
 	for {
 		for k, item := range items {
-			_, err := fmt.Printf("%d - %s\n", k, f(k, item))
+			_, err := PrintQuiet(fmt.Sprintf("[%d] %s\n", k, f(k, item)))
 			if err != nil {
 				return 0, v, err
 			}
 		}
-		_, err := fmt.Printf("0 - %s\n", zeroText)
+		_, err := PrintQuiet(fmt.Sprintf("[0] %s\n", zeroText))
 		if err != nil {
 			return 0, v, err
 		}
-		_, err = fmt.Printf("%s: ", s)
+		_, err = PrintQuiet(fmt.Sprintf("%s: ", s))
 		if err != nil {
 			return 0, v, err
 		}
@@ -198,7 +198,7 @@ func ScanSelectMapWithZero[V any](s string, zeroText string, items map[int]V, f 
 		str := StdinScanner.Text()
 		selected, err := strconv.ParseInt(str, 10, 32)
 		if err != nil || selected < 0 || int(selected) > len(items) {
-			fmt.Printf("Value should be a number\n")
+			PrintQuiet("Value should be a number\n")
 			continue
 		}
 		if selected == 0 {
@@ -208,6 +208,6 @@ func ScanSelectMapWithZero[V any](s string, zeroText string, items map[int]V, f 
 		if exists {
 			return int(selected), item, nil
 		}
-		fmt.Printf("Selected number is not valid\n")
+		PrintQuiet("Selected number is not valid\n")
 	}
 }
